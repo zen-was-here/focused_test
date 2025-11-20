@@ -29,7 +29,7 @@ def check_setup():
         console.print("Running setup_kb.py to initialize knowledge base...")
 
         try:
-            subprocess.run([sys.executable, "setup_kb.py"], check=True)
+            subprocess.run([sys.executable, "-m", "knowledge_base.setup_kb"], check=True)
             console.print("✓ Knowledge base initialized")
         except subprocess.CalledProcessError:
             console.print("Error: Failed to initialize knowledge base")

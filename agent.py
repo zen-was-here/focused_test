@@ -1,12 +1,12 @@
-"""Travel booking agent using LangChain v1 and LangGraph."""
 import os
 from typing import TypedDict, Annotated, Sequence
 from langchain.agents import create_agent
 from langchain.agents.middleware import PIIMiddleware
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain.tools import tool
 from langchain_core.embeddings import Embeddings
 from langchain_core.vectorstores import VectorStore
+from langchain_core.retrievers import BaseRetriever
 from langchain_ollama import OllamaEmbeddings, ChatOllama
 from langgraph.graph import StateGraph, END
 from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
@@ -27,50 +27,27 @@ class TravelAgentState(TypedDict):
     """State for the travel booking agent."""
     messages: Annotated[Sequence[BaseMessage], operator.add]
 
-
-def setup_rag():
-    embeddings = OllamaEmbeddings()
-
-    vectorstore = load_vector_store(embeddings)
-
-    # return 3 most similar docs
-    retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
-    return retriever
-
 def load_vector_store(embeddings: Embeddings) -> VectorStore:
+    """Loads the Chroma vector store if it exists."""
     if os.path.exists("chroma_db"):
-        vectorstore = Chroma(
+        return Chroma(
             persist_directory="./chroma_db",
             embedding_function=embeddings
         )
-
-        return vectorstore
     else:
         raise ValueError("Knowledge base not initialized. Run 'python setup_kb.py' first.")
 
+def create_knowledge_base_retriever() -> BaseRetriever:
+    """Initializes embeddings and loads the vector store once."""
+    model_name = os.getenv("MODEL", "llama3.2")
+    embeddings = OllamaEmbeddings(model=model_name)
+    vectorstore = load_vector_store(embeddings)
+
+    # Return 3 most similar docs
+    return vectorstore.as_retriever(search_kwargs={"k": 3})
+
 class KnowledgeBaseInput(BaseModel):
     query: str = Field(...)
-
-@tool("search_knowledge_base", args_schema=KnowledgeBaseInput)
-def search_knowledge_base(query: str) -> str:
-    """
-    Search the travel knowledge base for information about destinations, policies, FAQs, etc.
-
-    Args:
-        query: The search query
-
-    Returns:
-        Relevant information from the knowledge base
-    """
-    retriever = setup_rag()
-    docs = retriever.invoke(query)
-
-    results = []
-    for doc in docs:
-        results.append(f"Source: {doc.metadata.get('source', 'unknown')}\n{doc.page_content}\n")
-
-    return "\n---\n".join(results)
-
 
 def create_travel_agent():
     """Create the travel booking agent with LangChain."""
@@ -83,13 +60,35 @@ def create_travel_agent():
         verbose=False,
     )
 
+    retriever = create_knowledge_base_retriever()
+
+    @tool("search_knowledge_base", args_schema=KnowledgeBaseInput)
+    def search_knowledge_base(query: str) -> str:
+        """
+        Search the travel knowledge base for information about destinations, policies, FAQs, etc.
+
+        Args:
+            query: The search query
+
+        Returns:
+            Relevant information from the knowledge base
+        """
+        docs = retriever.invoke(query)
+
+        results = []
+        for doc in docs:
+            results.append(f"Source: {doc.metadata.get('source', 'unknown')}\n{doc.page_content}\n")
+
+        return "\n---\n".join(results)
+
+    # 3. Add the locally defined tool to the list
     tools = [
         search_flights,
         search_hotels,
         create_booking,
         lookup_booking,
         get_weather_forecast,
-        search_knowledge_base,
+        search_knowledge_base, # This is the new tool defined above
     ]
 
     system_prompt = """You are a helpful travel booking assistant. Your role is to:
@@ -200,4 +199,3 @@ def run_agent_streaming(graph, query: str, state: TravelAgentState):
 
     final_state = graph.invoke(state)
     state["messages"] = final_state["messages"]
-
