@@ -33,7 +33,7 @@ python3 setup_cli.py run
 ```bash
 # Create virtual environment (Python 3.11+ recommended)
 python3 -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+source .venv/bin/activate
 
 # Install dependencies
 pip install --upgrade pip
