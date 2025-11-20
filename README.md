@@ -24,8 +24,8 @@ A travel booking agent CLI built with LangChain + LangGraph that helps users sea
 chmod +x setup.sh
 ./setup.sh
 source .venv/bin/activate
-python3 cli.py setup
-python3 cli.py run
+python3 setup_cli.py setup
+python3 setup_cli.py run
 ```
 
 **Option 2: Manual**
@@ -64,20 +64,20 @@ LANGCHAIN_PROJECT=travel-booking-agent
 
 ```bash
 # Initialize the knowledge base
-python3 cli.py setup
+python3 setup_cli.py setup
 
 # Run the agent
-python3 cli.py run
+python3 setup_cli.py run
 ```
 
 ## CLI Commands
 
 ```bash
-python3 cli.py setup   # Initialize knowledge base
-python3 cli.py run     # Run the agent
-python3 cli.py eval    # Run evaluation suite
-python3 cli.py clean   # Clean generated files
-python3 cli.py help    # Show help message
+python3 setup_cli.py setup   # Initialize knowledge base
+python3 setup_cli.py run     # Run the agent
+python3 setup_cli.py eval    # Run evaluation suite
+python3 setup_cli.py clean   # Clean generated files
+python3 setup_cli.py help    # Show help message
 ```
 
 ## Usage Examples
@@ -94,7 +94,7 @@ python3 cli.py help    # Show help message
 Run the evaluation suite:
 
 ```bash
-python3 cli.py eval
+python3 setup_cli.py eval
 ```
 
 Or directly:
