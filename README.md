@@ -172,18 +172,9 @@ graph TB
 
 ## Potential Improvements
 
-### Error Handling & Recovery
-- Retry logic, graceful degradation
-
-### Production Readiness
-- Dockerization, API server, auth, rate limiting, logging
-
-### Enhanced Graph Structure
-- Intent classification and specialized routing
-
-### Checkpointing & Persistence
-- Resume conversations, multi-session state
-
-### Advanced RAG
-- Multi-query retrieval, hybrid search
+1. **Error Handling & Recovery**: Retry logic, more error handling
+2. **Production Readiness**: Dockerization, API server, auth, rate limiting, logging
+3. **Enhanced Graph Structure**: Intent classification and specialized routing
+4. **Checkpointing & Persistence**: Resume conversations, multi-session state
+5. **Advanced RAG**: Multi-query retrieval, hybrid search
 
