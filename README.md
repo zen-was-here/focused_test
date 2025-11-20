@@ -120,7 +120,7 @@ graph TB
 
     subgraph "Outer Graph (LangGraph)"
         AgentNode --> InvokeAgent[agent.invoke with full message history]
-        InvokeAgent --> ExtractNew[Extract only NEW messages]
+        InvokeAgent --> ExtractNew[Extract new messages]
         ExtractNew --> Return[Return new messages]
     end
 
