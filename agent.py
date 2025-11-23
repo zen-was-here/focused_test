@@ -81,14 +81,13 @@ def create_travel_agent():
 
         return "\n---\n".join(results)
 
-    # 3. Add the locally defined tool to the list
     tools = [
         search_flights,
         search_hotels,
         create_booking,
         lookup_booking,
         get_weather_forecast,
-        search_knowledge_base, # This is the new tool defined above
+        search_knowledge_base,
     ]
 
     system_prompt = """You are a helpful travel booking assistant. Your role is to:

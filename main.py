@@ -52,7 +52,7 @@ def main():
     if os.getenv("LANGCHAIN_TRACING_V2") == "true":
         console.print("LangSmith tracing enabled\n")
 
-    graph = create_travel_graph()
+    graph = create_travel_graph() #outer graph
     state = {"messages": []}
 
     while True:
